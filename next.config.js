@@ -5,7 +5,7 @@ const nextConfig = {
         return [
             {
                 source: '/',                // Redirect from root URL
-                destination: '/auth/login', // Redirect to /auth/login
+                destination: '/auth/mainpage', // Redirect to /auth/login
                 permanent: false,           // Use temporary redirect
             },
             {

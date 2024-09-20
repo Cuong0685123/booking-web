@@ -7,19 +7,25 @@ import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { Rating } from 'primereact/rating';
 import { Divider } from 'primereact/divider';
-import { useRouter } from 'next/navigation'; // To handle navigation
+import { useRouter } from 'next/navigation';
 
 const MainPage = () => {
     const [dates, setDates] = useState<(Date | null)[] | null>(null);
     const [guests, setGuests] = useState<number>(1);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const router = useRouter(); // Initialize router for navigation
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const router = useRouter();
 
-    // Simulating fetching username from localStorage or backend
     useEffect(() => {
+        // Check login status and role from localStorage
+        const token = localStorage.getItem('token');
         const username = localStorage.getItem('username');
-        if (username === 'admin') {
-            setIsAdmin(true);
+
+        if (token) {
+            setIsLoggedIn(true);
+            if (username === 'admin') {
+                setIsAdmin(true);
+            }
         }
     }, []);
 
@@ -37,6 +43,14 @@ const MainPage = () => {
     const handleSearch = () => {
         console.log('Searching for rooms: Dates:', dates, 'Guests:', guests);
         // Add search logic here
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('role');
+        setIsLoggedIn(false);
+        router.push('/auth/login'); // Redirect to login page
     };
 
     const navigateToLogin = () => {
@@ -66,14 +80,22 @@ const MainPage = () => {
         <div>
             {/* Navigation Bar */}
             <div className="p-3 shadow-2 flex justify-content-end align-items-center bg-gray-900">
-                <Button label="Login" className="p-button-text text-white mr-2" onClick={navigateToLogin} />
-                <Button label="Sign Up" className="p-button-outlined p-button-light" onClick={navigateToRegister} />
-                {isAdmin && (
-                    <div className="flex gap-2">
-                        <Button label="Add Room" icon="pi pi-plus" className="p-button-success" onClick={handleAddRoom} />
-                        <Button label="Edit Room" icon="pi pi-pencil" className="p-button-warning" onClick={handleEditRoom} />
-                        <Button label="Delete Room" icon="pi pi-trash" className="p-button-danger" onClick={handleDeleteRoom} />
-                    </div>
+                {isLoggedIn ? (
+                    <>
+                        <Button label="Logout" className="p-button-text text-white mr-2" onClick={handleLogout} />
+                        {isAdmin && (
+                            <div className="flex gap-2">
+                                <Button label="Add Room" icon="pi pi-plus" className="p-button-success" onClick={handleAddRoom} />
+                                <Button label="Edit Room" icon="pi pi-pencil" className="p-button-warning" onClick={handleEditRoom} />
+                                <Button label="Delete Room" icon="pi pi-trash" className="p-button-danger" onClick={handleDeleteRoom} />
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <>
+                        <Button label="Login" className="p-button-text text-white mr-2" onClick={navigateToLogin} />
+                        <Button label="Sign Up" className="p-button-outlined p-button-light" onClick={navigateToRegister} />
+                    </>
                 )}
             </div>
 
@@ -116,31 +138,19 @@ const MainPage = () => {
                 <h2 className="text-center text-4xl mb-5">Featured Rooms</h2>
                 <div className="grid grid-nogutter">
                     <div className="col-12 md:col-4">
-                        <Card
-                            title="Luxury Suite"
-                            subTitle="$299 per night"
-                            className="mb-4"
-                        >
+                        <Card title="Luxury Suite" subTitle="$299 per night" className="mb-4">
                             <p className="m-0">A luxurious experience with ocean views and exclusive amenities.</p>
                             <Rating value={5} readOnly stars={5} cancel={false} className="mt-3" />
                         </Card>
                     </div>
                     <div className="col-12 md:col-4">
-                        <Card
-                            title="Deluxe Room"
-                            subTitle="$199 per night"
-                            className="mb-4"
-                        >
+                        <Card title="Deluxe Room" subTitle="$199 per night" className="mb-4">
                             <p className="m-0">Modern comfort with city views and premium services.</p>
                             <Rating value={4} readOnly stars={5} cancel={false} className="mt-3" />
                         </Card>
                     </div>
                     <div className="col-12 md:col-4">
-                        <Card
-                            title="Standard Room"
-                            subTitle="$99 per night"
-                            className="mb-4"
-                        >
+                        <Card title="Standard Room" subTitle="$99 per night" className="mb-4">
                             <p className="m-0">A cozy and affordable room, perfect for short stays.</p>
                             <Rating value={3} readOnly stars={5} cancel={false} className="mt-3" />
                         </Card>
@@ -182,20 +192,12 @@ const MainPage = () => {
                 <h2 className="text-center text-4xl mb-5">Exclusive Deals</h2>
                 <div className="grid grid-nogutter">
                     <div className="col-12 md:col-6">
-                        <Card
-                            title="Stay 3 Nights, Get 1 Free"
-                            subTitle="Available at select hotels"
-                            className="mb-4"
-                        >
+                        <Card title="Stay 3 Nights, Get 1 Free" subTitle="Available at select hotels" className="mb-4">
                             <p>Enjoy a free night when you book a 3-night stay! Don't miss out on this limited-time offer.</p>
                         </Card>
                     </div>
                     <div className="col-12 md:col-6">
-                        <Card
-                            title="20% Off Winter Getaways"
-                            subTitle="Book by December 31"
-                            className="mb-4"
-                        >
+                        <Card title="20% Off Winter Getaways" subTitle="Book by December 31" className="mb-4">
                             <p>Plan your winter escape with our 20% off deal. Perfect for snowy retreats and cozy stays.</p>
                         </Card>
                     </div>

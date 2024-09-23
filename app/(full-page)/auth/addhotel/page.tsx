@@ -5,7 +5,7 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Panel } from 'primereact/panel';
 import { useRouter } from 'next/navigation';
-import { addHotel } from '@/booking/service/addHotel'; // Import the service
+import { addHotel } from '@/booking/service/AddHotel'; // Import the service
 
 type Room = {
     roomNumber: string;
@@ -40,7 +40,6 @@ const AddHotelForm = () => {
         const { name, value } = e.target;
         const newRooms = [...hotel.rooms];
 
-        // Use type guards to set values correctly based on the field name
         if (name === 'price') {
             newRooms[index].price = parseFloat(value) || 0; // Ensure price is a number
         } else if (name === 'isAvailable') {
@@ -74,7 +73,7 @@ const AddHotelForm = () => {
         e.preventDefault();
         try {
             await addHotel(hotel); // Call the service function here
-            router.push('/admin'); // Redirect after successful submission
+            router.push('/auth/mainpage'); // Redirect after successful submission
         } catch (error) {
             console.error("Error adding hotel", error);
         }
@@ -107,7 +106,7 @@ const AddHotelForm = () => {
 
                         <h3>Rooms</h3>
                         {hotel.rooms.map((room, index) => (
-                            <div key={index} className="grid">
+                            <div key={index} className="grid mb-3">
                                 <div className="col-12 md:col-3">
                                     <label htmlFor={`roomNumber-${index}`}>Room Number:</label>
                                     <InputText
@@ -144,7 +143,7 @@ const AddHotelForm = () => {
                             </div>
                         ))}
 
-                        <Button label="Add Another Room" icon="pi pi-plus" onClick={addRoom} className="mt-2 mb-4" />
+                        <Button type="button" label="Add Another Room" icon="pi pi-plus" onClick={addRoom} className="mt-2 mb-4" />
                         <Button type="submit" label="Submit" icon="pi pi-check" />
                     </form>
                 </Panel>

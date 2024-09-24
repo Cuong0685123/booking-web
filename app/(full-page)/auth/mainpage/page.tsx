@@ -36,11 +36,10 @@ const MainPage = () => {
         const fetchHotels = async () => {
             try {
                 const data = await getAllHotels();
-                console.log('Fetched hotels:', data); // Log the data
+                console.log('Fetched hotels:', data);
 
-                // Ensure hotelList is an array
                 const hotelList = Array.isArray(data) ? data : data.hotels || [];
-                console.log('Hotel List:', hotelList); // Check the hotel list
+                console.log('Hotel List:', hotelList);
                 setHotels(hotelList);
             } catch (error) {
                 console.error('Failed to fetch hotels:', error);
@@ -61,13 +60,11 @@ const MainPage = () => {
 
     const handleSearch = () => {
         console.log('Searching for rooms: Dates:', dates, 'Guests:', guests);
-        // Implement your search logic here
     };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
-        localStorage.removeItem('role');
         setIsLoggedIn(false);
         router.push('/auth/login');
     };
@@ -95,14 +92,19 @@ const MainPage = () => {
     const handleViewRooms = async (hotelId: number, hotelName: string) => {
         try {
             const rooms = await getRoomsByHotelId(hotelId);
-            const roomList = Array.isArray(rooms) ? rooms : rooms.data || []; // Adjust based on your API response
-            console.log('Fetched rooms:', roomList); // Log fetched rooms
+            const roomList = Array.isArray(rooms) ? rooms : rooms.data || [];
+            console.log('Fetched rooms:', roomList);
             setSelectedHotelRooms(roomList);
             setSelectedHotelName(hotelName);
             setIsDialogVisible(true);
         } catch (error) {
             console.error('Failed to fetch rooms:', error);
         }
+    };
+
+    const handleBooking = (roomId: number) => {
+        // Navigate to the booking page with the roomId as a query parameter
+        router.push(`/auth/bookingpage?roomId=${roomId}`);
     };
 
     return (
@@ -187,10 +189,18 @@ const MainPage = () => {
                 {selectedHotelRooms.length > 0 ? (
                     <ul>
                         {selectedHotelRooms.map(room => (
-                            <li key={room.id}>
-                                <h4>{room.roomNumber}</h4>
-                                <p>Type: {room.type}</p>
-                                <p>Price: ${room.price.toFixed(2)}</p>
+                            <li key={room.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0' }}>
+                                <div>
+                                    <h4>{room.roomNumber}</h4>
+                                    <p>Type: {room.type}</p>
+                                    <p>Price: ${room.price.toFixed(2)}</p>
+                                </div>
+                                <Button
+                                    label="Booking"
+                                    icon="pi pi-calendar-plus"
+                                    className="p-button-info"
+                                    onClick={() => handleBooking(room.id)} // Redirect to booking page
+                                />
                             </li>
                         ))}
                     </ul>
